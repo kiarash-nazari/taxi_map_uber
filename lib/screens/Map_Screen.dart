@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:taxi_map/constants/Dimens.dart';
 import 'package:taxi_map/constants/Text_Styles.dart';
+import 'package:taxi_map/widgets/back_button_widget.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -15,9 +15,12 @@ class _MappScreenState extends State<MapScreen> {
     return SafeArea(
         child: Scaffold(
       body: Stack(children: [
+        //OSM MAP
         Container(
           color: Colors.black,
         ),
+
+        //Origin button
         Positioned(
           left: 0,
           right: 0,
@@ -30,24 +33,11 @@ class _MappScreenState extends State<MapScreen> {
             ),
           ),
         ),
-        Positioned(
-          left: Dimens.medium,
-          top: Dimens.medium,
-          child: Container(
-            height: 50,
-            width: 50,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.black26,
-                    offset: Offset(2, 3),
-                    blurRadius: 18),
-              ],
-            ),
-            child: IconButton(
-                onPressed: () {}, icon: const Icon(Icons.arrow_back)),
-          ),
+
+        MyBackButton(
+          onpressed: () {
+            print("ss");
+          },
         ),
       ]),
     ));

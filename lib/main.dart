@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:taxi_map/Map_Screen.dart';
+import 'package:taxi_map/screens/Map_Screen.dart';
 import 'package:taxi_map/constants/Dimens.dart';
 
 void main() {
