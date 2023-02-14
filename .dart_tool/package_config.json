@@ -122,6 +122,18 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "geocoding",
+      "rootUri": "file:///C:/Users/ASUS-K555LF154H/AppData/Local/Pub/Cache/hosted/pub.dev/geocoding-2.0.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "geocoding_platform_interface",
+      "rootUri": "file:///C:/Users/ASUS-K555LF154H/AppData/Local/Pub/Cache/hosted/pub.dev/geocoding_platform_interface-2.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "google_fonts",
       "rootUri": "file:///C:/Users/ASUS-K555LF154H/AppData/Local/Pub/Cache/hosted/pub.dev/google_fonts-4.0.3",
       "packageUri": "lib/",
@@ -422,7 +434,7 @@
       "languageVersion": "2.18"
     }
   ],
-  "generated": "2023-02-13T16:14:23.536033Z",
+  "generated": "2023-02-14T08:13:49.182839Z",
   "generator": "pub",
   "generatorVersion": "2.19.2"
 }
