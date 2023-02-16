@@ -17,7 +17,7 @@ class _MappScreenState extends State<MapScreen> {
       body: Stack(children: [
         //OSM MAP
         Container(
-          color: Colors.black,
+          color: Colors.lightBlue,
         ),
 
         //Origin button

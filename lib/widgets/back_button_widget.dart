@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:taxi_map/constants/Dimens.dart';
 
 class MyBackButton extends StatelessWidget {
-  Function onpressed = (){};
+  Function() onpressed;
 
   MyBackButton({super.key, required this.onpressed});
 
@@ -15,13 +15,19 @@ class MyBackButton extends StatelessWidget {
         height: 50,
         width: 50,
         decoration: const BoxDecoration(
+          color: Colors.white,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
                 color: Colors.black26, offset: Offset(2, 3), blurRadius: 18),
           ],
         ),
-        child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_back)),
+        child: IconButton(
+            onPressed: onpressed,
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            )),
       ),
     );
   }
