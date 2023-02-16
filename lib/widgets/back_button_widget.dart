@@ -26,7 +26,6 @@ class MyBackButton extends StatelessWidget {
             onPressed: onpressed,
             icon: const Icon(
               Icons.arrow_back,
-              color: Colors.white,
             )),
       ),
     );
