@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:taxi_map/constants/Dimens.dart';
 import 'package:taxi_map/constants/Text_Styles.dart';
 import 'package:taxi_map/widgets/back_button_widget.dart';
@@ -19,14 +22,36 @@ class MapScreen extends StatefulWidget {
 
 class _MappScreenState extends State<MapScreen> {
   List currentWidgetList = [CurrentWidgetState.selectedOriginState];
+  Widget markerIcon = SvgPicture.asset("icons/origins.svg");
+  List<GeoPoint> geoPoints = [];
+
+  MapController mapController = MapController(
+      initMapWithUserPosition: false,
+      initPosition:
+          GeoPoint(latitude: 35.3254642654, longitude: 90.2355842345));
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       body: Stack(children: [
         //OSM MAP
-        Container(
-          color: Colors.lightBlue,
+        SizedBox.expand(
+          child: OSMFlutter(
+            controller: mapController,
+            initZoom: 15,
+            maxZoomLevel: 18,
+            minZoomLevel: 8,
+            isPicker: true,
+            stepZoom: 1,
+            mapIsLoading: const SpinKitCircle(
+              color: Colors.black,
+            ),
+            markerOption: MarkerOption(
+              advancedPickerMarker: MarkerIcon(
+                iconWidget: markerIcon,
+              ),
+            ),
+          ),
         ),
 
         //Origin button
