@@ -22,13 +22,15 @@ class MapScreen extends StatefulWidget {
 
 class _MappScreenState extends State<MapScreen> {
   List currentWidgetList = [CurrentWidgetState.selectedOriginState];
-  Widget markerIcon = SvgPicture.asset("icons/origins.svg");
+  Widget markerIcon = SvgPicture.asset(
+    "assets/icons/origin.svg",
+    height: 100,
+    width: 40,
+  );
   List<GeoPoint> geoPoints = [];
 
-  MapController mapController = MapController(
-      initMapWithUserPosition: false,
-      initPosition:
-          GeoPoint(latitude: 35.3254642654, longitude: 90.2355842345));
+  MapController mapController = MapController(initMapWithUserPosition: true);
+  // initPosition: GeoPoint(latitude: 34.8505739, longitude: 33.4233499));
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -38,11 +40,12 @@ class _MappScreenState extends State<MapScreen> {
         SizedBox.expand(
           child: OSMFlutter(
             controller: mapController,
+            trackMyPosition: false,
             initZoom: 15,
             maxZoomLevel: 18,
             minZoomLevel: 8,
             isPicker: true,
-            stepZoom: 1,
+            stepZoom: 1.0,
             mapIsLoading: const SpinKitCircle(
               color: Colors.black,
             ),
@@ -87,7 +90,7 @@ class _MappScreenState extends State<MapScreen> {
     return widget;
   }
 
-  Positioned origin() {
+  Widget origin() {
     return Positioned(
       left: 0,
       right: 0,
@@ -95,11 +98,23 @@ class _MappScreenState extends State<MapScreen> {
       child: Padding(
         padding: const EdgeInsets.all(Dimens.large),
         child: ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
+            GeoPoint originGeoPoint =
+                await mapController.getCurrentPositionAdvancedPositionPicker();
+
+            geoPoints.add(originGeoPoint);
+
+            markerIcon = SvgPicture.asset(
+              "assets/icons/destination.svg",
+              height: 100,
+              width: 40,
+            );
+
             setState(() {
               currentWidgetList
                   .add(CurrentWidgetState.selectedDestinationState);
             });
+            mapController.init();
           },
           child: Text(
             "Select Origin",
@@ -110,7 +125,7 @@ class _MappScreenState extends State<MapScreen> {
     );
   }
 
-  Positioned des() {
+  Widget des() {
     return Positioned(
       left: 0,
       right: 0,
@@ -133,7 +148,7 @@ class _MappScreenState extends State<MapScreen> {
     );
   }
 
-  Positioned reqDriver() {
+  Widget reqDriver() {
     return Positioned(
       left: 0,
       right: 0,
