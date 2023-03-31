@@ -27,7 +27,18 @@ class _MappScreenState extends State<MapScreen> {
     height: 100,
     width: 40,
   );
+  Widget originIcon = SvgPicture.asset(
+    "assets/icons/origin.svg",
+    height: 100,
+    width: 40,
+  );
+  Widget destIcon = SvgPicture.asset(
+    "assets/icons/destination.svg",
+    height: 100,
+    width: 40,
+  );
   List<GeoPoint> geoPoints = [];
+  String distance = "calculating distance...";
 
   MapController mapController = MapController(initMapWithUserPosition: true);
   // initPosition: GeoPoint(latitude: 34.8505739, longitude: 33.4233499));
@@ -47,8 +58,31 @@ class _MappScreenState extends State<MapScreen> {
             isPicker: true,
             stepZoom: 1.0,
             mapIsLoading: const SpinKitCircle(
-              color: Colors.black,
+              color: Color.fromARGB(255, 25, 130, 222),
+              size: 50.0,
             ),
+            userLocationMarker: UserLocationMaker(
+              personMarker: const MarkerIcon(
+                icon: Icon(
+                  Icons.location_history_rounded,
+                  color: Colors.red,
+                  size: 100,
+                ),
+              ),
+              directionArrowMarker: const MarkerIcon(
+                icon: Icon(
+                  Icons.double_arrow,
+                  size: 100,
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+            roadConfiguration: RoadConfiguration(
+                roadColor: const Color.fromARGB(255, 10, 149, 242),
+                startIcon: const MarkerIcon(
+                    icon: Icon(
+                  Icons.cyclone_rounded,
+                ))),
             markerOption: MarkerOption(
               advancedPickerMarker: MarkerIcon(
                 iconWidget: markerIcon,
@@ -62,9 +96,18 @@ class _MappScreenState extends State<MapScreen> {
 
         MyBackButton(
           onpressed: () {
+            if (geoPoints.isNotEmpty) {
+              geoPoints.removeLast();
+            }
             setState(() {
               if (currentWidgetList.length > 1) {
                 currentWidgetList.removeLast();
+                markerIcon = SvgPicture.asset(
+                  "assets/icons/origin.svg",
+                  height: 100,
+                  width: 40,
+                );
+                mapController.init();
               }
             });
           },
@@ -104,16 +147,18 @@ class _MappScreenState extends State<MapScreen> {
 
             geoPoints.add(originGeoPoint);
 
-            markerIcon = SvgPicture.asset(
-              "assets/icons/destination.svg",
-              height: 100,
-              width: 40,
-            );
+            markerIcon = destIcon;
 
             setState(() {
               currentWidgetList
                   .add(CurrentWidgetState.selectedDestinationState);
             });
+            mapController.cancelAdvancedPositionPicker();
+
+            await mapController.addMarker(geoPoints.first,
+                markerIcon: MarkerIcon(
+                  iconWidget: originIcon,
+                ));
             mapController.init();
           },
           child: Text(
@@ -133,7 +178,28 @@ class _MappScreenState extends State<MapScreen> {
       child: Padding(
         padding: const EdgeInsets.all(Dimens.large),
         child: ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
+            await mapController
+                .getCurrentPositionAdvancedPositionPicker()
+                .then((value) {
+              geoPoints.add(value);
+            });
+
+            mapController.cancelAdvancedPositionPicker();
+            await mapController.addMarker(geoPoints.last,
+                markerIcon: MarkerIcon(
+                  iconWidget: destIcon,
+                ));
+
+            await distance2point(geoPoints.first, geoPoints.last).then((value) {
+              if (value <= 1000) {
+                distance =
+                    "distance is ${value.toStringAsFixed(2).toString()} M";
+              } else {
+                distance =
+                    "distance is ${(value / 1000).toStringAsFixed(2).toString()} KM";
+              }
+            });
             setState(() {
               currentWidgetList
                   .add(CurrentWidgetState.selectedRequestDriverState);
@@ -149,18 +215,40 @@ class _MappScreenState extends State<MapScreen> {
   }
 
   Widget reqDriver() {
+    mapController.zoomOut();
+    mapController.currentLocation();
+    mapController.drawRoad(geoPoints.first, geoPoints.last);
+
     return Positioned(
       left: 0,
       right: 0,
       bottom: 0,
       child: Padding(
         padding: const EdgeInsets.all(Dimens.large),
-        child: ElevatedButton(
-          onPressed: () {},
-          child: Text(
-            "Request Driver",
-            style: MyTextStyles.button,
-          ),
+        child: Column(
+          children: [
+            Container(
+                width: double.infinity,
+                height: 58,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(Dimens.medium),
+                ),
+                child: Center(child: Text(distance))),
+            const SizedBox(
+              height: Dimens.small,
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {},
+                child: Text(
+                  "Request Driver",
+                  style: MyTextStyles.button,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
