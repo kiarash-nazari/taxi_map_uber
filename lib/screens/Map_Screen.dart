@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:taxi_map/constants/Dimens.dart';
 import 'package:taxi_map/constants/Text_Styles.dart';
 import 'package:taxi_map/widgets/back_button_widget.dart';
@@ -39,6 +40,8 @@ class _MappScreenState extends State<MapScreen> {
   );
   List<GeoPoint> geoPoints = [];
   String distance = "calculating distance...";
+  String originAddress = "Origin Adrress...";
+  String distanceAdrress = "Distance Adrress...";
 
   MapController mapController = MapController(initMapWithUserPosition: true);
   // initPosition: GeoPoint(latitude: 34.8505739, longitude: 33.4233499));
@@ -204,6 +207,7 @@ class _MappScreenState extends State<MapScreen> {
               currentWidgetList
                   .add(CurrentWidgetState.selectedRequestDriverState);
             });
+            getExactAdrress();
           },
           child: Text(
             "Select Destination",
@@ -217,7 +221,13 @@ class _MappScreenState extends State<MapScreen> {
   Widget reqDriver() {
     mapController.zoomOut();
     mapController.currentLocation();
-    mapController.drawRoad(geoPoints.first, geoPoints.last);
+    mapController.drawRoad(geoPoints.first, geoPoints.last,
+        roadOption: const RoadOption(
+            keepInitialGeoPoints: true,
+            roadWidth: 9,
+            zoomInto: true,
+            showMarkerOfPOI: true,
+            roadColor: Colors.blue));
 
     return Positioned(
       left: 0,
@@ -227,6 +237,28 @@ class _MappScreenState extends State<MapScreen> {
         padding: const EdgeInsets.all(Dimens.large),
         child: Column(
           children: [
+            Container(
+                width: double.infinity,
+                height: 58,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(Dimens.medium),
+                ),
+                child: Center(child: Text(originAddress))),
+            const SizedBox(
+              height: Dimens.small,
+            ),
+            Container(
+                width: double.infinity,
+                height: 58,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(Dimens.medium),
+                ),
+                child: Center(child: Text(distanceAdrress))),
+            const SizedBox(
+              height: Dimens.small,
+            ),
             Container(
                 width: double.infinity,
                 height: 58,
@@ -252,5 +284,31 @@ class _MappScreenState extends State<MapScreen> {
         ),
       ),
     );
+  }
+
+  getExactAdrress() async {
+    try {
+      await placemarkFromCoordinates(
+              geoPoints.first.latitude, geoPoints.first.longitude,
+              localeIdentifier: "en")
+          .then((List<Placemark> pList) {
+        setState(() {
+          originAddress =
+              "${pList.first.locality} ${pList.first.street} ${pList.first.thoroughfare} ${pList[2].name}";
+        });
+      });
+      await placemarkFromCoordinates(
+              geoPoints.last.latitude, geoPoints.last.longitude,
+              localeIdentifier: "en")
+          .then((List<Placemark> pList) {
+        setState(() {
+          distanceAdrress =
+              "${pList.first.locality} ${pList.first.street} ${pList.first.thoroughfare} ${pList[2].name}";
+        });
+      });
+    } catch (e) {
+      originAddress = "adrress is not availible";
+      distanceAdrress = "adrress is not availible";
+    }
   }
 }
