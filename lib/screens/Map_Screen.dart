@@ -99,18 +99,29 @@ class _MappScreenState extends State<MapScreen> {
 
         MyBackButton(
           onpressed: () {
-            if (geoPoints.isNotEmpty) {
-              geoPoints.removeLast();
-            }
             setState(() {
-              if (currentWidgetList.length > 1) {
-                currentWidgetList.removeLast();
-                markerIcon = SvgPicture.asset(
-                  "assets/icons/origin.svg",
-                  height: 100,
-                  width: 40,
-                );
-                mapController.init();
+              switch (currentWidgetList.last) {
+                case CurrentWidgetState.selectedRequestDriverState:
+                  mapController.removeMarker(geoPoints.last);
+                  setState(() {
+                    markerIcon = originIcon;
+                    mapController.advancedPositionPicker();
+                    geoPoints.removeLast();
+                    currentWidgetList.removeLast();
+                  });
+                  mapController.removeLastRoad();
+
+                  break;
+                case CurrentWidgetState.selectedDestinationState:
+                  mapController.removeMarker(geoPoints.last);
+
+                  setState(() {
+                    geoPoints.removeLast();
+                    currentWidgetList.removeLast();
+                    mapController.advancedPositionPicker();
+                  });
+                  break;
+                default:
               }
             });
           },
@@ -149,7 +160,6 @@ class _MappScreenState extends State<MapScreen> {
                 await mapController.getCurrentPositionAdvancedPositionPicker();
 
             geoPoints.add(originGeoPoint);
-
             markerIcon = destIcon;
 
             setState(() {
