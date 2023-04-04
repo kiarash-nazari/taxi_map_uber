@@ -99,29 +99,29 @@ class _MappScreenState extends State<MapScreen> {
 
         MyBackButton(
           onpressed: () {
+            switch (currentWidgetList.last) {
+              case CurrentWidgetState.selectedRequestDriverState:
+                mapController.advancedPositionPicker();
+                mapController.removeMarker(geoPoints.last);
+
+                geoPoints.removeLast();
+                markerIcon = destIcon;
+                mapController.removeLastRoad();
+
+                break;
+              case CurrentWidgetState.selectedDestinationState:
+                markerIcon = originIcon;
+                mapController.removeMarker(geoPoints.last);
+                geoPoints.removeLast();
+                break;
+              default:
+            }
             setState(() {
-              switch (currentWidgetList.last) {
-                case CurrentWidgetState.selectedRequestDriverState:
-                  mapController.removeMarker(geoPoints.last);
-                  setState(() {
-                    markerIcon = originIcon;
-                    mapController.advancedPositionPicker();
-                    geoPoints.removeLast();
-                    currentWidgetList.removeLast();
-                  });
-                  mapController.removeLastRoad();
-
-                  break;
-                case CurrentWidgetState.selectedDestinationState:
-                  mapController.removeMarker(geoPoints.last);
-
-                  setState(() {
-                    geoPoints.removeLast();
-                    currentWidgetList.removeLast();
-                    mapController.advancedPositionPicker();
-                  });
-                  break;
-                default:
+              if (currentWidgetList.length > 1) {
+                currentWidgetList.removeLast();
+                markerIcon = originIcon;
+              } else {
+                print("last");
               }
             });
           },
